@@ -20,35 +20,28 @@ app.get('/products', function (req, res) {
     res.send(files)
 });
 
-app.get('/products/:id', function (req, res) {
-    console.log(req.params.id);
-    res.end()
-});
-
-app.post('/products/:id/delete', function (req, res){
-    files.splice(req.params.id, 1);
+function updateFile () {
     fs.writeFile('data.json', JSON.stringify(files), 'utf8', function (err, data) {
         if (err) throw err;
         else console.log("Everything is OK");
     });
+}
+
+app.post('/products/:id/delete', function (req, res){
+    files.splice(req.params.id, 1);
+    updateFile();
     res.end()
 });
 
-app.post('/products/:id/edit',function(req, res){
+app.post('/products/:id/edit',function (req, res) {
     files.splice(req.params.id, 1, req.body.editedProduct);
-    fs.writeFile('data.json', JSON.stringify(files), 'utf8', function(err, data){
-        if (err) throw err;
-        else console.log("Everything is OK");
-    });
+    updateFile();
     res.end()
 });
 
 app.post('/products/add', function (req, res) {
     files.push(req.body.newProduct);
-    fs.writeFile('data.json', JSON.stringify(files), 'utf8', function(err, data){
-        if (err) throw err;
-        else console.log("Everything is OK");
-    });
+    updateFile();
     res.end()
 });
 
