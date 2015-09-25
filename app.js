@@ -13,11 +13,11 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors());
 
 app.get('/', function (req, res) {
-    res.send('Hello World!')
+    res.send('Hello World!').end()
 });
 
 app.get('/products', function (req, res) {
-    res.send(files)
+    res.send(files).end()
 });
 
 function updateFile () {
@@ -46,11 +46,8 @@ app.post('/products/add', function (req, res) {
 });
 
 fs.readFile("data.json", "utf8", function (err, data) {
-    if (err) {
-        console.error(err)
-    } else {
-        files = JSON.parse(data);
-
+    if (err) console.error(err);
+    else files = JSON.parse(data);
         var server = app.listen(3000, function () {
 
             var host = server.address().address;
@@ -58,7 +55,4 @@ fs.readFile("data.json", "utf8", function (err, data) {
 
             console.log('PhotoCat app listening at http://%s:%s', host, port);
         });
-    }
 });
-
-
