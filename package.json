@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/Hrummer/PhotoCat-back",
   "dependencies": {
+    "body-parser": "^1.14.0",
     "cors": "^2.7.1",
     "express": "^4.13.3"
   }
