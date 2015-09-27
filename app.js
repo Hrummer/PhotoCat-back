@@ -2,57 +2,48 @@
  * Created by vadym on 23.09.15.
  */
 var express = require('express');
-var fs = require('fs');
 var bodyParser = require('body-parser');
 var cors = require('cors');
 var app = express();
-var files = null;
+var sqlite3 = require('sqlite3').verbose();
+var db = new sqlite3.Database('database');
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors());
 
-app.get('/', function (req, res) {
-    res.send('Hello World!').end()
-});
-
 app.get('/products', function (req, res) {
-    res.send(files).end()
-});
-
-function updateFile () {
-    fs.writeFile('data.json', JSON.stringify(files), 'utf8', function (err, data) {
-        if (err) throw err;
-        else console.log("Everything is OK");
+    db.all('SELECT * FROM products', function (err, data) {
+        res.send(data).end();
     });
-}
+});
 
 app.post('/products/:id/delete', function (req, res){
-    files.splice(req.params.id, 1);
-    updateFile();
-    res.end()
+    db.run('DELETE FROM products WHERE id=?',[req.params.id], function (err) {
+        if (err) res.sendStatus(500).end();
+        else res.end();
+    })
 });
 
 app.post('/products/:id/edit',function (req, res) {
-    files.splice(req.params.id, 1, req.body.editedProduct);
-    updateFile();
-    res.end()
+    db.run('UPDATE products SET name=? WHERE id=?', [req.body.editedProduct, req.params.id], function(err) {
+        console.log([req.body.editedProduct, req.params.id])
+        if (err) res.sendStatus(500).end();
+        else res.end();
+    });
 });
 
 app.post('/products/add', function (req, res) {
-    files.push(req.body.newProduct);
-    updateFile();
-    res.end()
+    db.run('INSERT INTO products (name) VALUES (?)', [req.body.newProduct], function () {
+        res.send(this.lastID.toString()).end();
+    });
 });
 
-fs.readFile("data.json", "utf8", function (err, data) {
-    if (err) console.error(err);
-    else files = JSON.parse(data);
-        var server = app.listen(3000, function () {
 
-            var host = server.address().address;
-            var port = server.address().port;
+var server = app.listen(3000, function () {
 
-            console.log('PhotoCat app listening at http://%s:%s', host, port);
-        });
+    var host = server.address().address;
+    var port = server.address().port;
+
+    console.log('PhotoCat app listening at http://%s:%s', host, port);
 });
