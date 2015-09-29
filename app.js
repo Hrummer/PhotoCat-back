@@ -27,7 +27,6 @@ app.post('/products/:id/delete', function (req, res){
 
 app.post('/products/:id/edit',function (req, res) {
     db.run('UPDATE products SET name=? WHERE id=?', [req.body.editedProduct, req.params.id], function(err) {
-        console.log([req.body.editedProduct, req.params.id])
         if (err) res.sendStatus(500).end();
         else res.end();
     });
